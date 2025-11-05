@@ -11,9 +11,9 @@ from passlib.hash import bcrypt
 
 from app import db
 from models import User, UserCredentials
-from schemas import UserSchema, RegisterSchema, LoginSchema
+from api.schemas import UserSchema, RegisterSchema, LoginSchema
 
-from datetime import datetime, timedelta
+from datetime import timedelta
 from functools import wraps
 
 def roles_required(*allowed_roles: str):
@@ -105,10 +105,11 @@ class UserRegisterAPI(MethodView):
         if User.query.filter_by(email=data['email']).first():
             return {"Error": "Email en uso"}
         
-        new_user = User(name=data["name"], email=data['email'])
+        password_hash = bcrypt.hash(data['password'])
+
+        new_user = User(name=data["username"], email=data['email'], password=password_hash)
         db.session.add(new_user)
         db.session.flush()
-        password_hash = bcrypt.hash(data['password'])
         credenciales = UserCredentials(
             user_id=new_user.id,
             password_hash=password_hash,
@@ -125,7 +126,7 @@ class AuthLoginAPI(MethodView):
             data = LoginSchema().load(request.json)
         except ValidationError as err:
             return {"errors": err.messages}, 400
-        user = User.query.filter_by(email=data["email"]).first()
+        user = User.query.filter_by(email=data["email"])[0]
         if not user or not user.credential:
             return {"errors": {"credentials": ["Inválidas"]}}, 401
         if not bcrypt.verify(data["password"], user.credential.password_hash):
@@ -135,12 +136,12 @@ class AuthLoginAPI(MethodView):
             "id": user.id,
             "email": user.email,
             "role": user.credential.role,
-            "name": user.name
+            "username": user.name
         }
         token = create_access_token(
             identity=identity,
             additional_claims=additional_claims,
-            expires_delta=datetime.now()+timedelta(minutes=10)
+            expires_delta=timedelta(minutes=10)
         )
         return {"access_token": token}, 200
     

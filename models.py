@@ -7,12 +7,12 @@ db = SQLAlchemy()
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100), nullable=False, unique = True)
+    name = db.Column(db.String(100), nullable=False, unique = True)
     email = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(512), nullable=False, unique=False) #512 caracteres, 100 es poco para guardar contraseñas hash/encriptada
     is_active = db.Column(db.Boolean, default=True) #para eliminar cuentas pero que se guarden en bd
     def __str__(self):
-        return self.username
+        return self.name
 
 class Post(db.Model):
     __tablename__ = 'post'
@@ -59,7 +59,7 @@ class Comment(db.Model):
     is_active = db.Column(db.Boolean, default=True) #para eliminar post pero que se guarden en bd
 
     def __str__(self):
-        return f"Comentario de {self.autor.username} en post {self.post.title}"
+        return f"Comentario de {self.autor.name} en post {self.post.title}"
     
 #####PARA AGREGAR CATEGORIAS VER "script_categoriabd.py" INSTRUCCIONES EN README#####
 class Categoria(db.Model):

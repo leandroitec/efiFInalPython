@@ -10,6 +10,12 @@ class PostSchema(Schema):
     title = fields.Str(allow_none=True)
     date_time = fields.Date(allow_none=True)
     user = fields.Nested("UserSchema", only=["name"], dump_only=True)
+    categoria = fields.Str(allow_none=True)
+
+class Comment(Schema):
+    post_id = fields.Int(dump_only=True)
+    content = fields.Str(allow_none=True)
+    
 
 class UserSchema(Schema):
     id = fields.Int(dump_only=True)
