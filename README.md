@@ -13,5 +13,5 @@ INSTRUCCIONES PRIMERA VEZ
     7. Iniciar flask db ($ uv run flask db init) SOLO UNA VEZ
     8. Actualizar db ($ uv run flask db migrate)
     9. Aplicar cambios ($ uv run flask db upgrade)
-    10 Iniciar servidor (& uv Flask run --reload)
+    10 Iniciar servidor (& uv run flask --reload)
     11. Abrir navegador y acceder a http://127.0.0.1:5000

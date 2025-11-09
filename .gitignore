@@ -10,3 +10,6 @@ wheels/
 .venv/
 enviroment/
 .enviroment/
+
+*/migrations/
+migrations/

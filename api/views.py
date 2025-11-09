@@ -10,7 +10,7 @@ from flask_jwt_extended import (
 from passlib.hash import bcrypt
 
 from app import db
-from models import User, UserCredentials
+from models import User, UserCredentials, Post, Comment
 from api.schemas import UserSchema, RegisterSchema, LoginSchema
 
 from datetime import timedelta
@@ -94,6 +94,13 @@ class UserDetailAPI(MethodView):
         user = User.query.get_or_404(id)
         return UserSchema().dump(user), 200
     
+class UserDetailAPI(MethodView):
+    @jwt_required()
+    @roles_required("user")
+    def get(self, id):
+        user = User.query.get_or_404(id)
+        return UserSchema().dump(user), 200
+    
 
 class UserRegisterAPI(MethodView):
     def post(self):
@@ -117,7 +124,8 @@ class UserRegisterAPI(MethodView):
         )
         db.session.add(credenciales)
         db.session.commit()
-        return UserSchema().dump(new_user)
+
+        return {"mensaje": "Usuario creado", "user_id": UserSchema().dump(new_user)}
 
 
 class AuthLoginAPI(MethodView):
@@ -144,4 +152,15 @@ class AuthLoginAPI(MethodView):
             expires_delta=timedelta(minutes=10)
         )
         return {"access_token": token}, 200
+    
+#para ver las metricas (moderadires/admin)
+class StatsAPI(MethodView):
+    @jwt_required()
+    @roles_required("moderator","admin")
+    def get(self):
+        return {
+            "total_users": User.query.count(),
+            "total_posts": Post.query.count(),
+            "total_comments": Comment.query.count()
+        }, 200
     
