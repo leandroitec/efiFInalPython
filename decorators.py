@@ -14,7 +14,7 @@ def roles_required(*allowed_roles: str):
             claims = get_jwt()
             role = claims.get("role")
             if not role or role not in allowed_roles:
-                return {"Error": "acceso denegado"}
+                return {"Error": "acceso denegado, no tiene permisos"}
             return fn(*args, **kwargs)
         return wrapper
     return decorator

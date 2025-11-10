@@ -32,6 +32,7 @@ from functools import wraps
 #    return decorator
 
 #para ver todos los usuarios *COMPROBAR*
+    #GET    /api/users              # Solo admin
 class UserAPI(MethodView):
     @jwt_required()
     @roles_required("admin")
@@ -95,12 +96,46 @@ class UserAdminAPI(MethodView):
             return {"Error": "No es posible borrarlo"}
 
 #obtener usuarios self   *VER* FALTA SELF
+    #GET    /api/users/<id>         # Usuario mismo o admin (usuario a uno mismo)
+    #PUT    /api/users/<id>         # Usuario mismo o admin (usuario a uno mismo)
+    #PATCH  /api/users/<id>/role    # Solo admin (cambiar rol)
+    #DELETE /api/users/<id>         # Solo admin (desactivar)
 class UserDetailAPI(MethodView):
     @jwt_required()
     @roles_required("moderator", "user", "admin")
+    #obtenemos el user y roll
     def get(self, id):
+        current_user_id = int(get_jwt_identity())
+        claims = get_jwt()
+        #logica para diferenciar usuarios de admins (**puedo ponerla como decorator**)
+        if claims["role"] != "admin" and current_user_id != id:
+            return {"Error": "No posee permisos"}, 403
+        #busca y devuelve usuarios
         user = User.query.get_or_404(id)
         return UserSchema().dump(user), 200
+    
+    @jwt_required()
+    @roles_required("moderator", "user", "admin")
+    def put (self, id):
+        current_user_id = int(get_jwt_identity())
+        claims = get_jwt()
+        #logica para diferenciar usuarios de admins (**puedo ponerla como decorator**)
+        if claims["role"] != "admin" and current_user_id != id:
+            return {"Error": "No posee permisos"}, 403
+        #logica para actualizar usuarios
+        pass
+
+    @jwt_required()
+    @roles_required("admin")
+    def patch (self, id):
+        #cambiar roles
+        pass
+    
+    @jwt_required()
+    @roles_required("admin")
+    def delete (self, id):
+        #eliminar usuarios
+        pass
     
     
 #registro de cuentas
