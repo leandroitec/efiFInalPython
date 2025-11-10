@@ -4,7 +4,7 @@
 <br>
 . Leandro Odetto
 
-# INSTRUCCIONES PRIMERA VEZ
+## INSTRUCCIONES PRIMERA VEZ
 
     1. Clonar el repositorio
     2. Verificar si esta instalado uv ($ uv --version), si no larga un mensaje con la version debes instalarlo ($ pipx install uv).
@@ -17,11 +17,11 @@
     10 Iniciar servidor (& uv run flask run --reload)
     11. Abrir navegador y acceder a http://127.0.0.1:5000
 
-# COMANDOS
+## COMANDOS
 
 1. Iniciar servidor __uv run flask run --reload__
 
-# ESTRUCTURA
+## ESTRUCTURA
 
 - **efiFInalPython**
     - assets/
@@ -33,16 +33,16 @@
     app.py
     decorators.py
 
-# ESQUEMA Y RELACIONES BD
+## ESQUEMA Y RELACIONES BD
 
 ![Diagrama de BD](assets/estructura_BD.png)
 
-# COMENTARIOS INTERNOS DEL GRUPO
+## COMENTARIOS INTERNOS DEL GRUPO
 
 1. Creo esta seccion para la comunicacion del grupo si fuese necesario (recordar subir el README a main)
-2. Cambie la estructrura general del proyecto, ver de pasar los decorator a su propio archivo
+2. Cambie la estructrura general del proyecto, ver de pasar los decorator a su propio archivo en carpeta raiz
 
-# AVANCES/CHECKLIST
+## AVANCES/CHECKLIST
 
 - Creo esta seccion para controlar mas adelante que falta de la consigna
 
