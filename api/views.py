@@ -12,117 +12,44 @@ from passlib.hash import bcrypt
 from app import db
 from models.models import User, UserCredentials, Post, Comment
 from api.schemas import UserSchema, RegisterSchema, LoginSchema, PostSchema
-from decorators import roles_required
-
+from decorators import (
+    roles_required, 
+    admin_or_myid_required
+    )
 from datetime import timedelta
-from functools import wraps
 
-#                                    *****MOVIDO DE LUGAR, despues eliminar*****
-# decorator (para que anden todos los roles)
-#def roles_required(*allowed_roles: str):
-#    def decorator(fn):
-#        @wraps(fn)
-#        def wrapper(*args, **kwargs):
-#            claims = get_jwt()
-#            role = claims.get("role")
-#            if not role or role not in allowed_roles:
-#                return {"Error": "acceso denegado"}
-#            return fn(*args, **kwargs)
-#        return wrapper
-#    return decorator
-
-#para ver todos los usuarios *COMPROBAR*
-    #GET    /api/users              # Solo admin
+#para ver todos los usuarios **CHECK**
 class UserAPI(MethodView):
+    #---------------------------------------------
+    #GET    /api/users              # Solo admin
+    #---------------------------------------------
     @jwt_required()
     @roles_required("admin")
     def get(self):
         users = User.query.all()
         return UserSchema(many=True).dump(users)
 
-    def post(self):
-        try:
-            data = UserSchema().load(request.json)
-            new_user = User(
-                name=data.get('username'),
-                email=data.get('email')
-            )
-            db.session.add(new_user)
-            db.session.commit()
-        except ValidationError as err:
-            return {"Errors": f"{err.messages}"}, 400
-        return UserSchema().dump(new_user), 201
-
-# Administracion usuarios (eventualemnte eliminar)
-class UserAdminAPI(MethodView):
-    @jwt_required()
-    @roles_required("admin")
-    #Obtener los usuarios movemos abajo (USER DETAIL)
-    #def get(self, id):
-    #    user = User.query.get_or_404(id)
-    #    return UserSchema().dump(user), 200
-    
-    def put(self, id):
-        user = User.query.get_or_404(id)
-        try: 
-            data = UserSchema().load(request.json)
-            user.name = data['username']
-            user.email = data['email']
-            db.session.commit()
-            return UserSchema().dump(user), 200
-        except ValidationError as err:
-            return {"Error": err.messages}
-
-    def patch(self, id):
-        user = User.query.get_or_404(id)
-        try: 
-            data = UserSchema(partial=True).load(request.json)
-            if 'username' in data:
-                user.name = data.get('username')
-            if 'email' in data:
-                user.email = data.get('email')
-            db.session.commit()
-            return UserSchema().dump(user), 200
-        except ValidationError as err:
-            return {"Error": err.messages}
-        
-    def delete(self, id):
-        user = User.query.get_or_404(id)
-        try:
-            db.session.delete(user)
-            db.session.commit()
-            return {"Message": "Deleted User"}, 204
-        except:
-            return {"Error": "No es posible borrarlo"}
-
-#obtener usuarios self   *VER* FALTA SELF
+#obtener usuarios self   **CHECK**
+class UserDetailAPI(MethodView):
+    #---------------------------------------------
     #GET    /api/users/<id>         # Usuario mismo o admin (usuario a uno mismo)
     #PUT    /api/users/<id>         # Usuario mismo o admin (usuario a uno mismo)
     #PATCH  /api/users/<id>/role    # Solo admin (cambiar rol)
     #DELETE /api/users/<id>         # Solo admin (desactivar)
-class UserDetailAPI(MethodView):
+    #---------------------------------------------
     @jwt_required()
     @roles_required("moderator", "user", "admin")
-    
+    @admin_or_myid_required
     #obtenemos el user y roll
     def get(self, id):
-        current_user_id = int(get_jwt_identity())
-        claims = get_jwt()
-        #logica para diferenciar usuarios de admins (**puedo ponerla como decorator**)
-        if claims["role"] != "admin" and current_user_id != id:
-            return {"Error": "No posee permisos"}, 403
         #busca y devuelve usuarios
         user = User.query.get_or_404(id)
         return UserSchema().dump(user), 200
     
     @jwt_required()
     @roles_required("moderator", "user", "admin")
+    @admin_or_myid_required
     def put (self, id):
-        current_user_id = int(get_jwt_identity())
-        claims = get_jwt()
-        #logica para diferenciar usuarios de admins (**puedo ponerla como decorator**)
-        if claims["role"] != "admin" and current_user_id != id:
-            return {"Error": "No posee permisos"}, 403
         #logica para actualizar usuarios
         user = User.query.get_or_404(id)
         try:
@@ -146,25 +73,30 @@ class UserDetailAPI(MethodView):
         #cambiar roles
         user = User.query.get_or_404(id)
         try:
-            rol = request.json.get("rol")
-            if rol not in ["user", "moderator", "admin"]:
-                return {"error": "not existing rol"}, 400
-            if not hasattr(user,"credential") or not user.credential:
-                return {"error": "Usuario sin credentials"}, 400
-            user.credential.rol=rol
+            role = request.json.get("role")
+            if role not in ["user", "moderator", "admin"]:
+                return {"error": "not existing role"}, 400
+            user.credential.role=role
             db.session.commit()
-            return {"message": f"El rol de '{user}' actualizado a '{rol}'"}, 200
+            return {"message": f"El rol de '{user}' actualizado a '{role}'"}, 200
         except Exception as error:
-            return{"Error": "No se pudo asignar el rol"}, 400
+            return{"Error": "No se pudo asignar el role"}, 400
     
     @jwt_required()
     @roles_required("admin")
     def delete (self, id):
-        #eliminar usuarios
-        pass
+        #eliminar usuarios  (eliminar directamente, ver borrado logico)
+        user = User.query.get_or_404(id)
+        try:
+            db.session.delete(user.credential)
+            db.session.delete(user)
+            db.session.commit()
+            return {"message": f"el usuario '{user}' ha sido eliminado"}, 200
+        except Exception as error:
+            return {"error": str(error)}, 400
     
     
-#registro de cuentas
+#registro de cuentas **CHECK**
 class UserRegisterAPI(MethodView):
     def post(self):
         try:
@@ -190,7 +122,7 @@ class UserRegisterAPI(MethodView):
 
         return {"mensaje": "Usuario creado", "user_id": UserSchema().dump(new_user)}
 
-# autenticacion al loguearse
+# autenticacion al loguearse **CHECK**
 class AuthLoginAPI(MethodView):
     def post(self):
         try:

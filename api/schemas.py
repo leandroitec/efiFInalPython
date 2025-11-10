@@ -30,11 +30,16 @@ class CommentSchema(Schema):
     #boolean borrado logico
     is_active = fields.Bool(dump_only=True)
     
-
+#Con motivos de test, agrego is_active y rol
 class UserSchema(Schema):
     id = fields.Int(dump_only=True)
-    username = fields.Str(required=True)
+    username = fields.Str(attribute="name", required=True)
     email = fields.Email(required=True)
+    rol = fields.Method("get_rol")
+    is_active = fields.Bool(attribute="is_active")
+    #funcion para obtener roles (credenciales)
+    def get_rol(self, obj):
+        return obj.credential.role
     
 class RegisterSchema(Schema):
     username = fields.Str(required=True)

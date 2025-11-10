@@ -11,7 +11,7 @@ from models.models import (
 )
 from flask_migrate import Migrate
 #import schemas
-from api.views import UserRegisterAPI, AuthLoginAPI, UserAPI, UserDetailAPI, StatsAPI, UserAdminAPI
+from api.views import UserRegisterAPI, AuthLoginAPI, UserAPI, UserDetailAPI, StatsAPI
 
 #-------------------------------------------------------------
 #INICIA FLASK, SQL, ETC
@@ -32,19 +32,22 @@ migrate = Migrate(app, db)
 #-------------------------------------------------------------
 #RUTAS/ENDPOINT
 #-------------------------------------------------------------
-#solo el admin
 app.add_url_rule(
     '/users',
     view_func=UserAPI.as_view('users_api'),
     methods=['POST', 'GET']
 )
 
-#UserDetailAPI todos los roles
-# *VER* , usuario, mod solo ven sl propio, ademin ve todos
 app.add_url_rule(
     '/users/<int:id>',
     view_func=UserDetailAPI.as_view('user_detail_api'),
-    methods=['GET', 'PUT', 'PATCH', 'DELETE']
+    methods=['GET', 'PUT', 'DELETE']
+)
+
+app.add_url_rule(
+    '/users/<int:id>/role',
+    view_func=UserDetailAPI.as_view('user_detail_api_role'),
+    methods=['PATCH']
 )
 
 # Public
@@ -61,7 +64,7 @@ app.add_url_rule(
     methods=['POST']
 )
 
-#ruta metricas (moderadires/admin)  *VER SCHEMA*
+#ruta metricas **VER**
 app.add_url_rule(
     '/stats',
     view_func=StatsAPI.as_view('stats_api'),

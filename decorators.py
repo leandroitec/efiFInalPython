@@ -5,6 +5,7 @@ from flask_jwt_extended import (
     get_jwt
 )
 from functools import wraps
+from flask import jsonify
 
 # decorator para verificar roles
 def roles_required(*allowed_roles: str):
@@ -18,3 +19,16 @@ def roles_required(*allowed_roles: str):
             return fn(*args, **kwargs)
         return wrapper
     return decorator
+
+#Para admin o propia"id" requerido
+def admin_or_myid_required(fn):
+    @wraps (fn)
+    def wrapper(*args, **kwargs):
+        claims = get_jwt()
+        current_user_id = int(get_jwt_identity()) 
+        target_user_id = int(kwargs.get('id'))   #user de la ruta /user/<id<
+        #logica para admin o propia id
+        if claims.get("role") != "admin" and current_user_id != target_user_id:
+            return jsonify({"Error": "No posee permisos"}), 403
+        return fn(*args, **kwargs)
+    return wrapper
