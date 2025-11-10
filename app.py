@@ -11,7 +11,7 @@ from models.models import (
 )
 from flask_migrate import Migrate
 #import schemas
-from api.views import UserRegisterAPI, AuthLoginAPI, UserAPI, UserDetailAPI, StatsAPI
+from views.views import UserRegisterAPI, AuthLoginAPI, UserAPI, UserDetailAPI, StatsAPI
 
 #-------------------------------------------------------------
 #INICIA FLASK, SQL, ETC

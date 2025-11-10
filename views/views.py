@@ -11,22 +11,29 @@ from passlib.hash import bcrypt
 
 from app import db
 from models.models import User, UserCredentials, Post, Comment
-from api.schemas import UserSchema, RegisterSchema, LoginSchema, PostSchema
+from schemas.schemas import UserSchema, RegisterSchema, LoginSchema, PostSchema
 from decorators import (
     roles_required, 
     admin_or_myid_required
     )
+from services.user_services import UserService
 from datetime import timedelta
 
+#-------------------------------------------------------------
+#USER VIEW
+#-------------------------------------------------------------
 #para ver todos los usuarios **CHECK**
 class UserAPI(MethodView):
     #---------------------------------------------
     #GET    /api/users              # Solo admin
     #---------------------------------------------
+    def __init__(self):
+        self.user_service = UserService()
+    
     @jwt_required()
     @roles_required("admin")
     def get(self):
-        users = User.query.all()
+        users = self.user_service.get_all_users()
         return UserSchema(many=True).dump(users)
 
 #obtener usuarios self   **CHECK**
@@ -37,65 +44,55 @@ class UserDetailAPI(MethodView):
     #PATCH  /api/users/<id>/role    # Solo admin (cambiar rol)
     #DELETE /api/users/<id>         # Solo admin (desactivar)
     #---------------------------------------------
+    def __init__(self):
+        self.user_service = UserService()
+
     @jwt_required()
     @roles_required("moderator", "user", "admin")
     @admin_or_myid_required
     #obtenemos el user y roll
     def get(self, id):
         #busca y devuelve usuarios
-        user = User.query.get_or_404(id)
+        user = self.user_service.get_user_details(id)
         return UserSchema().dump(user), 200
     
     @jwt_required()
     @roles_required("moderator", "user", "admin")
     @admin_or_myid_required
     def put (self, id):
-        #logica para actualizar usuarios
-        user = User.query.get_or_404(id)
         try:
-            # partial=True es para que no se exigan todos los datos, se puede solo cambiar la pass o el mail
-            data=UserSchema(partial=True).load(request.json)
-            if "username" in data:
-                user.name = data["username"]
-            if "email" in data:
-                user.email = data["email"]
-            db.session.commit()
-            return UserSchema().dump(user), 200
+            updated_user = self.user_service.update_user_profile(id, request.json)
+            return UserSchema().dump(updated_user), 200      
         except ValidationError as error:
             return {"errors": error.messages}, 400
-        except Exception as e:
-            db.session.rollback()
-            return {"error": f"No se pudo cambiar los datos: {str(e)}"}, 500
+        except Exception as error:
+            return {"error": f"No se pudo cambiar los datos: {str(error)}"}, 400
 
     @jwt_required()
     @roles_required("admin")
     def patch (self, id):
         #cambiar roles
-        user = User.query.get_or_404(id)
         try:
-            role = request.json.get("role")
-            if role not in ["user", "moderator", "admin"]:
-                return {"error": "not existing role"}, 400
-            user.credential.role=role
-            db.session.commit()
-            return {"message": f"El rol de '{user}' actualizado a '{role}'"}, 200
+            update_user = self.user_service.change_role (id, request.json)
+            return {"message": f"El rol de '{update_user.name}' actualizado a '{update_user.credential.role}'"}, 200
+        except ValueError as error:
+            return {"Error": str(error)}, 400
         except Exception as error:
-            return{"Error": "No se pudo asignar el role"}, 400
+            return {"Error": "No se pudo asignar el role"}, 400
     
     @jwt_required()
     @roles_required("admin")
     def delete (self, id):
         #eliminar usuarios  (eliminar directamente, ver borrado logico)
-        user = User.query.get_or_404(id)
         try:
-            db.session.delete(user.credential)
-            db.session.delete(user)
-            db.session.commit()
-            return {"message": f"el usuario '{user}' ha sido eliminado"}, 200
+            self.user_service.delete_user(id)
+            return {"message": f"el usuario ha sido eliminado"}, 200
         except Exception as error:
             return {"error": str(error)}, 400
     
-    
+#-------------------------------------------------------------
+#AUTH VIEW
+#-------------------------------------------------------------    
 #registro de cuentas **CHECK**
 class UserRegisterAPI(MethodView):
     def post(self):
@@ -148,7 +145,10 @@ class AuthLoginAPI(MethodView):
             expires_delta=timedelta(minutes=60)
         )
         return {"access_token": token}, 200
-    
+
+#-------------------------------------------------------------
+#METRICS VIEW
+#-------------------------------------------------------------    
 #para ver las metricas
 # **VER** los post de last week solo lo puede ver admin
 class StatsAPI(MethodView):
@@ -161,6 +161,9 @@ class StatsAPI(MethodView):
             "total_comments": Comment.query.count()
         }, 200
 
+#-------------------------------------------------------------
+#POST VIEW
+#-------------------------------------------------------------
 #crear post       *VER TEMA ROLES*
 class PostAPI(MethodView):
 
