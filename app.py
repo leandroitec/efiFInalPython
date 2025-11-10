@@ -44,7 +44,7 @@ app.add_url_rule(
 app.add_url_rule(
     '/users/<int:id>',
     view_func=UserDetailAPI.as_view('user_detail_api'),
-    methods=['GET']
+    methods=['GET', 'PUT', 'PATCH', 'DELETE']
 )
 
 # Public

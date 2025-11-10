@@ -44,7 +44,7 @@ class UserAPI(MethodView):
         try:
             data = UserSchema().load(request.json)
             new_user = User(
-                name=data.get('name'),
+                name=data.get('username'),
                 email=data.get('email')
             )
             db.session.add(new_user)
@@ -53,7 +53,7 @@ class UserAPI(MethodView):
             return {"Errors": f"{err.messages}"}, 400
         return UserSchema().dump(new_user), 201
 
-# Administracion usuarios
+# Administracion usuarios (eventualemnte eliminar)
 class UserAdminAPI(MethodView):
     @jwt_required()
     @roles_required("admin")
@@ -66,7 +66,7 @@ class UserAdminAPI(MethodView):
         user = User.query.get_or_404(id)
         try: 
             data = UserSchema().load(request.json)
-            user.name = data['name']
+            user.name = data['username']
             user.email = data['email']
             db.session.commit()
             return UserSchema().dump(user), 200
@@ -77,8 +77,8 @@ class UserAdminAPI(MethodView):
         user = User.query.get_or_404(id)
         try: 
             data = UserSchema(partial=True).load(request.json)
-            if 'name' in data:
-                user.name = data.get('name')
+            if 'username' in data:
+                user.name = data.get('username')
             if 'email' in data:
                 user.email = data.get('email')
             db.session.commit()
@@ -103,6 +103,7 @@ class UserAdminAPI(MethodView):
 class UserDetailAPI(MethodView):
     @jwt_required()
     @roles_required("moderator", "user", "admin")
+    
     #obtenemos el user y roll
     def get(self, id):
         current_user_id = int(get_jwt_identity())
@@ -123,13 +124,38 @@ class UserDetailAPI(MethodView):
         if claims["role"] != "admin" and current_user_id != id:
             return {"Error": "No posee permisos"}, 403
         #logica para actualizar usuarios
-        pass
+        user = User.query.get_or_404(id)
+        try:
+            # partial=True es para que no se exigan todos los datos, se puede solo cambiar la pass o el mail
+            data=UserSchema(partial=True).load(request.json)
+            if "username" in data:
+                user.name = data["username"]
+            if "email" in data:
+                user.email = data["email"]
+            db.session.commit()
+            return UserSchema().dump(user), 200
+        except ValidationError as error:
+            return {"errors": error.messages}, 400
+        except Exception as e:
+            db.session.rollback()
+            return {"error": f"No se pudo cambiar los datos: {str(e)}"}, 500
 
     @jwt_required()
     @roles_required("admin")
     def patch (self, id):
         #cambiar roles
-        pass
+        user = User.query.get_or_404(id)
+        try:
+            rol = request.json.get("rol")
+            if rol not in ["user", "moderator", "admin"]:
+                return {"error": "not existing rol"}, 400
+            if not hasattr(user,"credential") or not user.credential:
+                return {"error": "Usuario sin credentials"}, 400
+            user.credential.rol=rol
+            db.session.commit()
+            return {"message": f"El rol de '{user}' actualizado a '{rol}'"}, 200
+        except Exception as error:
+            return{"Error": "No se pudo asignar el rol"}, 400
     
     @jwt_required()
     @roles_required("admin")

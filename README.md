@@ -38,10 +38,17 @@
 ![Diagrama de BD](assets/estructura_BD.png)
 
 ## COMENTARIOS INTERNOS DEL GRUPO
-
+##### Generales
 1. Creo esta seccion para la comunicacion del grupo si fuese necesario (recordar subir el README a main)
 2. Cambie la estructrura general del proyecto, ver de pasar los decorator a su propio archivo en carpeta raiz
-
+3. Ahora el codigo esta comentado. __RECORDAR__ pulir el codigo
+4. HAY UN PROBLEMA __IMPORTANTE__: en la BD, User tiene "name" pero en UserSchema, tenemos "username". MEJORAR SCHEMA PARA QUE SEA "name" TAMBIEN, O AMBAS, SINO ES CONFUSO.__AHORA__ BD: User.name, Schema: "username"
+###### UserDetailAPI
+1. Metodos GET, PUT, PATCH funcionales
+2. Falta DELETE
+3. PUT, Solo se edita username y mail, __FALTA__ pasword, etc.
+4. PATCH, funciona, falta pulir
+5. HAY UN PROBLEMA __IMPORTANTE__: en la BD, User tiene "name" pero en UserSchema, tenemos "username". MEJORAR SCHEMA PARA QUE SEA "name" TAMBIEN, O AMBAS, SINO ES CONFUSO (pongo esto en general)
 ## AVANCES/CHECKLIST
 
 - Creo esta seccion para controlar mas adelante que falta de la consigna
