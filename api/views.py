@@ -10,24 +10,26 @@ from flask_jwt_extended import (
 from passlib.hash import bcrypt
 
 from app import db
-from models import User, UserCredentials, Post, Comment
+from models.models import User, UserCredentials, Post, Comment
 from api.schemas import UserSchema, RegisterSchema, LoginSchema, PostSchema
+from decorators import roles_required
 
 from datetime import timedelta
 from functools import wraps
 
+#                                    *****MOVIDO DE LUGAR, despues eliminar*****
 # decorator (para que anden todos los roles)
-def roles_required(*allowed_roles: str):
-    def decorator(fn):
-        @wraps(fn)
-        def wrapper(*args, **kwargs):
-            claims = get_jwt()
-            role = claims.get("role")
-            if not role or role not in allowed_roles:
-                return {"Error": "acceso denegado"}
-            return fn(*args, **kwargs)
-        return wrapper
-    return decorator
+#def roles_required(*allowed_roles: str):
+#    def decorator(fn):
+#        @wraps(fn)
+#        def wrapper(*args, **kwargs):
+#            claims = get_jwt()
+#            role = claims.get("role")
+#            if not role or role not in allowed_roles:
+#                return {"Error": "acceso denegado"}
+#            return fn(*args, **kwargs)
+#        return wrapper
+#    return decorator
 
 #para ver todos los usuarios *COMPROBAR*
 class UserAPI(MethodView):

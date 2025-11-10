@@ -9,7 +9,7 @@
 
 
 from app import app, db
-from models import Categoria
+from models.models import Categoria
 
 categorias = [
     "Anuncios y Noticias",

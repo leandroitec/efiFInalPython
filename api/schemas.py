@@ -2,7 +2,7 @@ from app import db
 
 from marshmallow import Schema, fields
 
-from models import User
+from models.models import User
 
 class PostSchema(Schema):
     id = fields.Int(dump_only=True)

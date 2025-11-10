@@ -1,16 +1,23 @@
+#-------------------------------------------------------------
+#IMPORTS
+#-------------------------------------------------------------
 from flask import Flask, request
 from flask_jwt_extended import JWTManager
-from models import (
+#import db
+from models.models import (
     db,
     User,
     Post,
 )
 from flask_migrate import Migrate
-
-#from api.schemas import PostSchema
+#import schemas
 from api.views import UserRegisterAPI, AuthLoginAPI, UserAPI, UserDetailAPI, StatsAPI, UserAdminAPI
 
+#-------------------------------------------------------------
+#INICIA FLASK, SQL, ETC
+#-------------------------------------------------------------
 app = Flask(__name__)
+
 #cambiar esto si tenes usuario y contraseña, //usuario:contraseña@host:@localhost/pyIIefi_db"
 app.config['SQLALCHEMY_DATABASE_URI'] = (
     "mysql+pymysql://root:@localhost/pyIIefi_final"
@@ -22,6 +29,9 @@ jwt = JWTManager(app)
 db.init_app(app)
 migrate = Migrate(app, db)
 
+#-------------------------------------------------------------
+#RUTAS/ENDPOINT
+#-------------------------------------------------------------
 #solo el admin
 app.add_url_rule(
     '/users',
@@ -59,7 +69,9 @@ app.add_url_rule(
     )
 
 
-
+#-------------------------------------------------------------
+#RUN SERVER
+#-------------------------------------------------------------
 if __name__ == '__main__':
     app.run(debug=True)
 
