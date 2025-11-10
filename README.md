@@ -26,12 +26,12 @@
 - **efiFInalPython**
     - assets/
     - models/
-        -models.py
+        - models.py
     - api/
         - schemas.py
         - views.py
-    app.py
-    decorators.py
+    - app.py
+    - decorators.py
 
 ## ESQUEMA Y RELACIONES BD
 
