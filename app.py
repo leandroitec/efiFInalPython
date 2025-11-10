@@ -8,7 +8,7 @@ from models import (
 from flask_migrate import Migrate
 
 #from api.schemas import PostSchema
-from api.views import UserRegisterAPI, AuthLoginAPI, UserAPI, UserDetailAPI, StatsAPI
+from api.views import UserRegisterAPI, AuthLoginAPI, UserAPI, UserDetailAPI, StatsAPI, UserAdminAPI
 
 app = Flask(__name__)
 #cambiar esto si tenes usuario y contraseña, //usuario:contraseña@host:@localhost/pyIIefi_db"
@@ -22,31 +22,36 @@ jwt = JWTManager(app)
 db.init_app(app)
 migrate = Migrate(app, db)
 
-
+#solo el admin
 app.add_url_rule(
     '/users',
     view_func=UserAPI.as_view('users_api'),
     methods=['POST', 'GET']
 )
+
+#UserDetailAPI todos los roles
+# *VER* , usuario, mod solo ven sl propio, ademin ve todos
 app.add_url_rule(
     '/users/<int:id>',
     view_func=UserDetailAPI.as_view('user_detail_api'),
-    methods=['GET', 'PUT', 'PATCH', 'DELETE']
+    methods=['GET']
 )
 
-
+# Public
 app.add_url_rule(
     '/login',
     view_func=AuthLoginAPI.as_view('user_user_api'),
     methods=['POST']
 )
 
+#Public
 app.add_url_rule(
     '/register',
     view_func=UserRegisterAPI.as_view('user_register_api'),
     methods=['POST']
 )
-#ruta metricas (moderadires/admin)
+
+#ruta metricas (moderadires/admin)  *VER SCHEMA*
 app.add_url_rule(
     '/stats',
     view_func=StatsAPI.as_view('stats_api'),

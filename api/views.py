@@ -11,11 +11,12 @@ from passlib.hash import bcrypt
 
 from app import db
 from models import User, UserCredentials, Post, Comment
-from api.schemas import UserSchema, RegisterSchema, LoginSchema
+from api.schemas import UserSchema, RegisterSchema, LoginSchema, PostSchema
 
 from datetime import timedelta
 from functools import wraps
 
+# decorator (para que anden todos los roles)
 def roles_required(*allowed_roles: str):
     def decorator(fn):
         @wraps(fn)
@@ -28,7 +29,10 @@ def roles_required(*allowed_roles: str):
         return wrapper
     return decorator
 
+#para ver todos los usuarios *COMPROBAR*
 class UserAPI(MethodView):
+    @jwt_required()
+    @roles_required("admin")
     def get(self):
         users = User.query.all()
         return UserSchema(many=True).dump(users)
@@ -46,13 +50,14 @@ class UserAPI(MethodView):
             return {"Errors": f"{err.messages}"}, 400
         return UserSchema().dump(new_user), 201
 
-
-class UserDetailAPI(MethodView):
+# Administracion usuarios
+class UserAdminAPI(MethodView):
     @jwt_required()
     @roles_required("admin")
-    def get(self, id):
-        user = User.query.get_or_404(id)
-        return UserSchema().dump(user), 200
+    #Obtener los usuarios movemos abajo (USER DETAIL)
+    #def get(self, id):
+    #    user = User.query.get_or_404(id)
+    #    return UserSchema().dump(user), 200
     
     def put(self, id):
         user = User.query.get_or_404(id)
@@ -87,21 +92,16 @@ class UserDetailAPI(MethodView):
         except:
             return {"Error": "No es posible borrarlo"}
 
+#obtener usuarios self   *VER* FALTA SELF
 class UserDetailAPI(MethodView):
     @jwt_required()
-    @roles_required("moderador")
+    @roles_required("moderator", "user", "admin")
     def get(self, id):
         user = User.query.get_or_404(id)
         return UserSchema().dump(user), 200
     
-class UserDetailAPI(MethodView):
-    @jwt_required()
-    @roles_required("user")
-    def get(self, id):
-        user = User.query.get_or_404(id)
-        return UserSchema().dump(user), 200
     
-
+#registro de cuentas
 class UserRegisterAPI(MethodView):
     def post(self):
         try:
@@ -127,7 +127,7 @@ class UserRegisterAPI(MethodView):
 
         return {"mensaje": "Usuario creado", "user_id": UserSchema().dump(new_user)}
 
-
+# autenticacion al loguearse
 class AuthLoginAPI(MethodView):
     def post(self):
         try:
@@ -149,11 +149,13 @@ class AuthLoginAPI(MethodView):
         token = create_access_token(
             identity=identity,
             additional_claims=additional_claims,
-            expires_delta=timedelta(minutes=10)
+            # *****************cambio temporal, para facilitar el test*************************
+            expires_delta=timedelta(minutes=60)
         )
         return {"access_token": token}, 200
     
-#para ver las metricas (moderadires/admin)
+#para ver las metricas
+# **VER** los post de last week solo lo puede ver admin
 class StatsAPI(MethodView):
     @jwt_required()
     @roles_required("moderator","admin")
@@ -163,4 +165,68 @@ class StatsAPI(MethodView):
             "total_posts": Post.query.count(),
             "total_comments": Comment.query.count()
         }, 200
+
+#crear post       *VER TEMA ROLES*
+class PostAPI(MethodView):
+
+    #obtener posts
+    @jwt_required()
+    def get(self, post_id=None):
+        # Ver todos los posts si no pasa id
+        if post_id is None:
+            posts = Post.query.all()
+            return PostSchema(many=True).dump(posts), 200
+        
+        # Ver un post especifico
+        post = Post.query.get_or_404(post_id)
+        return PostSchema().dump(post), 200
+
+    #crear post
+    @jwt_required()
+    @roles_required("user", "moderator")
+    def post(self):
+        try:
+            data = PostSchema().load(request.json)
+            user_id = get_jwt_identity()
+            new_post = Post(title=data["title"], content=data["content"], user_id=user_id)
+            db.session.add(new_post)
+            db.session.commit()
+            return PostSchema().dump(new_post), 201
+        except ValidationError as err:
+            return {"Error": err.messages}, 400
+
+    #edit post
+    @jwt_required()
+    @roles_required("user", "moderator")
+    def put(self, post_id):
+        post = Post.query.get_or_404(post_id)
+        user_id = get_jwt_identity()
+
+        # Si es usuario, solo puede editar su post
+        if user_id != post.user_id and "moderator" not in get_jwt_identity()["roles"]:
+            return {"Error": "No autorizado"}, 403
+
+        try:
+            data = PostSchema().load(request.json)
+            post.title = data["title"]
+            post.content = data["content"]
+            db.session.commit()
+            return PostSchema().dump(post), 200
+        except ValidationError as err:
+            return {"Error": err.messages}, 400
+
+    #eliminar post
+    @jwt_required()
+    @roles_required("user", "moderator")
+    def delete(self, post_id):
+        post = Post.query.get_or_404(post_id)
+        user_id = get_jwt_identity()
+
+        # Si es usuario, solo puede borrar su post
+        if user_id != post.user_id and "moderator" not in get_jwt_identity()["roles"]:
+            return {"Error": "No autorizado"}, 403
+
+        db.session.delete(post)
+        db.session.commit()
+        return {"Message": "Post eliminado"}, 204
     
