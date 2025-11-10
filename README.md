@@ -32,9 +32,9 @@
     - schemas/
         - schemas.py
     - repository
-        -user_repository.py
+        - user_repository.py
     - services
-        -user_services.py
+        - user_services.py
     - app.py
     - decorators.py
 
