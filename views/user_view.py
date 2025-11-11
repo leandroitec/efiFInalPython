@@ -75,9 +75,8 @@ class UserDetailAPI(MethodView):
     @jwt_required()
     @roles_required("admin")
     def delete (self, id):
-        #eliminar usuarios  (eliminar directamente, ver borrado logico)
         try:
-            self.user_service.delete_user(id)
+            self.user_service.softdelete_user(id)
             return {"message": f"el usuario ha sido eliminado"}, 200
         except Exception as error:
             return {"error": str(error)}, 400

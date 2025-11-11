@@ -36,3 +36,11 @@ class UserService:
     def delete_user (self, user_id):
         self.user_repository.delete_user(user_id)
         return True
+    
+    #Logci delete post
+    def softdelete_user(self, user_id):
+        user = self.user_repository.get_by_id(user_id)
+        if not user:
+            raise ValueError("El usuario no existe")
+        self.user_repository.logic_delete(user)
+        return True

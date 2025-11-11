@@ -46,3 +46,10 @@ class UserRepository:
         db.session.delete(user)
         db.session.commit()
         return True
+    
+    #logic delete
+    @staticmethod
+    def logic_delete (user):
+        user.is_active = False
+        db.session.commit()
+        return user

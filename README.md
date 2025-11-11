@@ -23,6 +23,26 @@
 
 ## DOCUMENTACION/ENDPOINTS
 
+1. POST /api/register               # Registro cuentas (Publico)
+2. POST /api/login                  # Autenth/loguearse (publico)
+3. GET  /api/posts                  # Ver posteos (Publico)
+4. GET  /api/posts/<id>             # Ver posteo especifico (Publico)
+5. POST /api/posts                  # Publicar post (User +)
+6. PUT  /api/posts/<id>             # Editar post (Self o Admin)
+7. DELETE /api/posts/<id>           # Borrado logico (Self o Admin)
+8. GET /api/posts/<id>/comments     # Ver comment de un post (Publico)
+9. POST /api/posts/<id>/comments    # Comentar Post (User+)
+10. DELETE /api/comments/<id>       # Borrado logico comments (Self, Mod, Admin)
+11. GET /api/categories             # Ver categorias (Publico)
+12. POST /api/categories            # Crear nuevas categorias (Mods y Admin)
+13. PUT /api/categories/<id>        # Editar categorias (Mods y Admin)
+14. DELETE /api/categories/<id>     # Borrar categorias (Admin)
+15. GET /api/users                  # Ver todos los usuarios (Admin)
+16. GET /api/users/<id>             # Ver usuario especifico (Self o Admin)
+17. PUT /api/users/<id>             # Editar usuario (Self o Admin)
+18. PATCH /api/users/<id>/role      # Cambiar rol (Admin)
+19. DELETE /api/users/<id>          # Borrar usuaro (Admin)
+20. GET /api/stats                  # ver estadisticas (mod) +last week (Admin)
 
 
 ## ESTRUCTURA
@@ -63,20 +83,20 @@
 ## COMENTARIOS INTERNOS DEL GRUPO
 ##### Generales
 1. Creo esta seccion para la comunicacion del grupo si fuese necesario (recordar subir el README a main)
-2. Cambie la estructrura general del proyecto, ver de pasar los decorator a su propio archivo en carpeta raiz
+2. ~~Cambie la estructrura general del proyecto, ver de pasar los decorator a su propio archivo en carpeta raiz~~
 3. Ahora el codigo esta comentado. __RECORDAR__ pulir el codigo
 4. Nuevamente cambie la estructura del ptoyecto para incluir Arquitectura service-repository
 
 ###### UserDetailAPI
-1. Metodos GET, PUT, PATCH, DELETE funcionales
-2. **Falta** BORRADO LOGICO
+1. ~~Metodos GET, PUT, PATCH, DELETE funcionales~~
+2. ~~**Falta** BORRADO LOGICO~~
 3. PUT esta de mas, malinterprete la consigna, pero lo dejo
-5. __IMPORTANTE__ EN DELETE, BORRA DIRECTAMENTE LA FILA DE LA TABLA. VER IMPLEMENTAR BORRADO LOGICO
-6. **FALTA** mover de vievs a user_views
+5. ~~__IMPORTANTE__ EN DELETE, BORRA DIRECTAMENTE LA FILA DE LA TABLA. VER IMPLEMENTAR BORRADO LOGICO~~
+6. ~~**FALTA** mover de vievs a user_views~~
 ###### PostAPI
-1. **FALTA** filtrado por categoria (logica armada en repository/service)  **FALTAAAAAA, LOGICA LISTA; CREAR RUTA Y ARMAR VIEW NOMAS**
+1. **FALTA** filtrado por categoria (logica armada en repository/service)  **FALTAAAAAA, LOGICA LISTA; CREAR RUTA Y ARMAR VIEW NOMAS**  (no puedo probar por fre-trial en markdown)
 2. Actualmente getpost trae todo incluido is_active false, para test (RECORDAR CAMBIAR SERVICE)
-3. falta implementar editar categoria
+3. ~~falta implementar editar categoria~~ ~~se hace aparte, no en api/post~~
 
 ## AVANCES/CHECKLIST
 
