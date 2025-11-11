@@ -12,6 +12,7 @@ from models.models import (
 from flask_migrate import Migrate
 #import schemas
 from views.views import UserRegisterAPI, AuthLoginAPI, UserAPI, UserDetailAPI, StatsAPI
+from views.post_views import PostAPI, PostDetailAPI
 
 #-------------------------------------------------------------
 #INICIA FLASK, SQL, ETC
@@ -70,6 +71,20 @@ app.add_url_rule(
     view_func=StatsAPI.as_view('stats_api'),
     methods=['GET']
     )
+
+app.add_url_rule(
+    '/posts',
+    view_func=PostAPI.as_view('post_api'),
+    methods=['POST', 'GET']
+)
+
+app.add_url_rule(
+    '/posts/<id>',
+    view_func=PostDetailAPI.as_view('post_detail_api'),
+    methods=['GET', 'PUT', 'DELETE']
+)
+
+
 
 
 #-------------------------------------------------------------

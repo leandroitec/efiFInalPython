@@ -1,6 +1,5 @@
 from repository.user_repository import UserRepository
 from schemas.schemas import UserSchema
-from flask import request
 
 #Logica de los datos de Repository (datos de las consultas a DB)
 class UserService:
