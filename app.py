@@ -21,7 +21,7 @@ app = Flask(__name__)
 
 #cambiar esto si tenes usuario y contraseña, //usuario:contraseña@host:@localhost/pyIIefi_db"
 app.config['SQLALCHEMY_DATABASE_URI'] = (
-    "mysql+pymysql://root:leli@localhost/efipp1"
+    "mysql+pymysql://root:@localhost/pyIIefi_final"
 )
 app.config['SQLALCHEMY_TRACK_NOTIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'cualquier-cosa'
