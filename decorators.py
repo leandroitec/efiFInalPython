@@ -3,7 +3,7 @@ from flask_jwt_extended import (
     get_jwt
 )
 from functools import wraps
-from models.models import Comment
+from models.models import Comment, Post
 
 # decorator para verificar roles
 def roles_required(*allowed_roles: str):
@@ -49,3 +49,19 @@ def comment_admin_mod_myid_required(fn):
         return fn(*args, comment=comment, **kwargs)
     return wrapper
                     
+#Para admin o propia "id" en post
+def post_admin_myid_required(fn):
+    @wraps (fn)
+    def wrapper (*args, **kwargs):
+        claims = get_jwt()
+        current_user_id = int(get_jwt_identity()) 
+        target_post_id = int(kwargs.get('id'))
+        post = Post.query.get(target_post_id)
+        if not post:
+            return {"Error": "Post no encontrado"}, 404
+        #logica
+        if claims.get("role") != "admin" and current_user_id != post.user_id:
+            return {"Error": "no tiene permisos"}, 403 
+        return fn(*args, **kwargs)
+    return wrapper
+    
