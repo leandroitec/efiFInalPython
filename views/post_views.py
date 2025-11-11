@@ -7,7 +7,7 @@ from flask_jwt_extended import (
 )
 
 from schemas.schemas import PostSchema
-from decorators import (
+from decorators.decorators import (
     post_admin_myid_required
     )
 from services.post_services import PostService

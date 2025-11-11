@@ -4,7 +4,7 @@
 <br>
 . Leandro Odetto
 
-## INSTRUCCIONES PRIMERA VEZ
+## INSTRUCCIONES DE INSTALACION
 
     1. Clonar el repositorio
     2. Verificar si esta instalado uv ($ uv --version), si no larga un mensaje con la version debes instalarlo ($ pipx install uv).
@@ -17,9 +17,13 @@
     10 Iniciar servidor (& uv run flask run --reload)
     11. Abrir navegador y acceder a http://127.0.0.1:5000
 
-## COMANDOS
+## COMANDOS/EJECUCION
 
 1. Iniciar servidor __uv run flask run --reload__
+
+## DOCUMENTACION/ENDPOINTS
+
+
 
 ## ESTRUCTURA
 
@@ -29,14 +33,28 @@
         - models.py
     - views/
         - views.py
+        - user_views.py
+        - stats_views.py
+        - post_views.py
+        - comments_views.py
+        - categories_views.py
     - schemas/
         - schemas.py
     - repository
         - user_repository.py
+        - stats_repository.py
+        - post_repository.py
+        - comment_repository.py
+        - categorie_repository.py
     - services
         - user_services.py
+        - stats_services.py
+        - post_services.py
+        - comment_services.py
+        - categorie_services.py
+    - cecorators/
+        - decorators.py
     - app.py
-    - decorators.py
 
 ## ESQUEMA Y RELACIONES BD
 

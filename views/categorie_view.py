@@ -4,7 +4,7 @@ from flask.views import MethodView
 from marshmallow import ValidationError
 from services.categorie_services import CategoriaService
 from schemas.schemas import CategoriaSchema
-from decorators import roles_required
+from decorators.decorators import roles_required
 
 class CategoriaListAPI(MethodView):
     def get(self):

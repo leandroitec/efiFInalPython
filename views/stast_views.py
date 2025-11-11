@@ -1,7 +1,7 @@
 from flask.views import MethodView
 from flask_jwt_extended import jwt_required, get_jwt
 from services.stats_services import StatsService
-from decorators import roles_required
+from decorators.decorators import roles_required
 
 class StatsAPI(MethodView):
     @jwt_required()

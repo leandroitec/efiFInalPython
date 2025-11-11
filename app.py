@@ -15,7 +15,8 @@ from views.post_views import PostAPI, PostDetailAPI
 from views.categorie_view import CategoriaCreateAPI, CategoriaListAPI, CategoriaDetailAPI
 from views.comment_views import CommentDetailAPI, PostCommentsAPI, CreateCommentAPI
 from views.stast_views import StatsAPI
-from views.views import UserRegisterAPI, AuthLoginAPI, UserAPI, UserDetailAPI 
+from views.views import UserRegisterAPI, AuthLoginAPI
+from views.user_view import UserAPI, UserDetailAPI
 
 #-------------------------------------------------------------
 #INICIA FLASK, SQL, ETC

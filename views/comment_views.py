@@ -5,7 +5,7 @@ from marshmallow import ValidationError
 
 from schemas.schemas import CommentSchema
 from services.comment_services import CommentService
-from decorators import comment_admin_mod_myid_required
+from decorators.decorators import comment_admin_mod_myid_required
 
 class PostCommentsAPI(MethodView):
     def get(self, id):
