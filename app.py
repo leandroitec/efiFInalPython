@@ -12,7 +12,7 @@ from models.models import (
 from flask_migrate import Migrate
 #import schemas
 from views.post_views import PostAPI, PostDetailAPI
-from views.views import UserRegisterAPI, AuthLoginAPI, UserAPI, UserDetailAPI, StatsAPI, CategoriaCreateAPI, CategoriaDetailAPI, CategoriaListAPI
+from views.views import UserRegisterAPI, AuthLoginAPI, UserAPI, UserDetailAPI, StatsAPI, CategoriaCreateAPI, CategoriaDetailAPI, CategoriaListAPI, PostCommentsAPI, CommentDetailAPI, CreateCommentAPI
 
 #-------------------------------------------------------------
 #INICIA FLASK, SQL, ETC
@@ -101,6 +101,25 @@ app.add_url_rule(
     "/categories/<int:id>",
     view_func=CategoriaDetailAPI.as_view("categoria_detail"),
     methods=["PUT", "DELETE"]
+)
+
+#comments
+app.add_url_rule(
+    "/posts/<int:id>/comments",
+    view_func=PostCommentsAPI.as_view("post_comments"),
+    methods=["GET"]
+)
+
+app.add_url_rule(
+    "/posts/<int:id>/comments",
+    view_func=CreateCommentAPI.as_view("create_comment"),
+    methods=["POST"]
+)
+
+app.add_url_rule(
+    "/comments/<int:id>",
+    view_func=CommentDetailAPI.as_view("comment_detail"),
+    methods=["DELETE"]
 )
 
 #-------------------------------------------------------------

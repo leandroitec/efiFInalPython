@@ -11,10 +11,11 @@ from passlib.hash import bcrypt
 
 from app import db
 from models.models import User, UserCredentials, Post, Comment, Categoria
-from schemas.schemas import UserSchema, RegisterSchema, LoginSchema, PostSchema, CategoriaSchema
+from schemas.schemas import UserSchema, RegisterSchema, LoginSchema, CategoriaSchema, CommentSchema
 from decorators import (
     roles_required, 
-    admin_or_myid_required
+    admin_or_myid_required,
+    comment_admin_mod_myid_required
     )
 from services.user_services import UserService
 from datetime import timedelta
@@ -225,6 +226,48 @@ class CategoriaDetailAPI(MethodView):
 #-------------------------------------------------------------
 #COMMENTS VIEW
 #------------------------------------------------------------- 
+# probar
+class PostCommentsAPI(MethodView):
+    def get(self, id):
+        Post.query.get_or_404(id) 
+        comments = (
+            Comment.query
+            .filter_by(post_id=id, is_active=True)
+            .order_by(Comment.date_time.desc())
+            .all()
+        )
+        return CommentSchema(many=True).dump(comments), 200    
 
+class CreateCommentAPI(MethodView):
+    @jwt_required()
+    def post(self, id):
+        Post.query.get_or_404(id) 
+        json_data = request.get_json()
+        if not json_data:
+            return {"error": "Faltan datos"}, 400
+        content = json_data.get("content", "").strip()
+        if not content:
+            return {"error": "El comentario no puede estar vacío"}, 400
+        user_id = get_jwt_identity()
+        new_comment = Comment(content=content, user_id=user_id, post_id=id)
+
+        db.session.add(new_comment)
+        db.session.commit()
+
+        return CommentSchema().dump(new_comment), 201
     
+class CommentDetailAPI(MethodView):
+    @jwt_required()
+    @comment_admin_mod_myid_required 
+    def delete(self, id, comment):
+        try:
+            comment = Comment.query.get_or_404(id)    
+            comment.is_active = False
+            db.session.commit()
+            return {"message": "Comentario eliminado correctamente"}, 200
+        except Exception as error:
+            return {"error": str(error)}, 400
+
+
+
 
