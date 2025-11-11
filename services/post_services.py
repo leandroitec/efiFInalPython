@@ -51,9 +51,6 @@ class PostService:
             post.title = data['title']
         if 'content' in data:
             post.content = data['content']
-        #if 'categoria_id' in data:
-            #post.categoria_id = data['categoria_id']
-            #NO ANDA EDITAR CATEGORIA   ****************************VER*********************
         self.repository.update_post()
         return post
     
