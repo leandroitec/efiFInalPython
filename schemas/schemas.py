@@ -11,9 +11,9 @@ class PostSchema(Schema):
     date_time = fields.DateTime(dump_only=True)
     # Relaciones fk
     user_id = fields.Int(load_only=True)
-    autor = fields.Nested("UserSchema", only=["name"], dump_only=True)
+    autor = fields.Nested("UserSchema", only=["username"], dump_only=True)
     categoria_id = fields.Int(load_only=True)
-    categoria = fields.Nested("CategoriaSchema", only=["nombre"], dump_only=True)
+    categoria = fields.Nested("CategoriaSchema", only=["name"], dump_only=True)
     #boolean para eliminado logico
     is_active = fields.Bool(dump_only=True)
 
@@ -24,7 +24,7 @@ class CommentSchema(Schema):
     date_time = fields.DateTime(dump_only=True)
     # Relaciones fk
     user_id = fields.Int(load_only=True)
-    autor = fields.Nested("UserSchema", only=["name"], dump_only=True)
+    autor = fields.Nested("UserSchema", only=["username"], dump_only=True)
     post_id = fields.Int(load_only=True)
     post = fields.Nested("PostSchema", only=["title"], dump_only=True)
     #boolean borrado logico
