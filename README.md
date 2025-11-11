@@ -94,7 +94,7 @@
 5. ~~__IMPORTANTE__ EN DELETE, BORRA DIRECTAMENTE LA FILA DE LA TABLA. VER IMPLEMENTAR BORRADO LOGICO~~
 6. ~~**FALTA** mover de vievs a user_views~~
 ###### PostAPI
-1. **FALTA** filtrado por categoria (logica armada en repository/service)  **FALTAAAAAA, LOGICA LISTA; CREAR RUTA Y ARMAR VIEW NOMAS**  (no puedo probar por fre-trial en markdown)
+1. **FALTA** filtrado por categoria (logica armada en repository/service)  **LOGICA LISTA;  FALTAAAAAA,CREAR RUTA Y ARMAR VIEW NOMAS**  (no puedo probar por fre-trial en markdown)
 2. Actualmente getpost trae todo incluido is_active false, para test (RECORDAR CAMBIAR SERVICE)
 3. ~~falta implementar editar categoria~~ ~~se hace aparte, no en api/post~~
 
