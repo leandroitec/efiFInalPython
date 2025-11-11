@@ -10,8 +10,8 @@ from flask_jwt_extended import (
 from passlib.hash import bcrypt
 
 from app import db
-from models.models import User, UserCredentials, Post, Comment
-from schemas.schemas import UserSchema, RegisterSchema, LoginSchema, PostSchema
+from models.models import User, UserCredentials, Post, Comment, Categoria
+from schemas.schemas import UserSchema, RegisterSchema, LoginSchema, PostSchema, CategoriaSchema
 from decorators import (
     roles_required, 
     admin_or_myid_required
@@ -160,3 +160,71 @@ class StatsAPI(MethodView):
             "total_posts": Post.query.count(),
             "total_comments": Comment.query.count()
         }, 200
+
+#-------------------------------------------------------------
+#CATEGORIAS VIEW
+#------------------------------------------------------------- 
+# anda todo ahora
+class CategoriaListAPI(MethodView):
+    def get(self):
+        categorias = Categoria.query.all()
+        return CategoriaSchema(many=True).dump(categorias), 200
+
+class CategoriaCreateAPI(MethodView):
+    @jwt_required()
+    @roles_required("admin", "moderator")
+    def post(self):
+        try:
+            data = CategoriaSchema().load(request.get_json())
+        except ValidationError as err:
+            return {"errors": err.messages}, 400
+
+        if Categoria.query.filter_by(name=data["name"]).first():
+            return {"error": "Ya existe una categoría con ese nombre"}, 400
+
+        categoria = Categoria(name=data["name"])
+        db.session.add(categoria)
+        db.session.commit()
+
+        return CategoriaSchema().dump(categoria), 201
+
+class CategoriaDetailAPI(MethodView):
+    @jwt_required()
+    @roles_required("moderator", "admin")
+    def put(self, id):
+        categoria = Categoria.query.get_or_404(id)
+
+        json_data = request.get_json()
+        if not json_data:
+            return {"error": "Faltan datos"}, 400
+
+        name = json_data.get("name", "").strip()
+        if not name:
+            return {"error": "El nombre no puede estar vacío"}, 400
+
+        existente = Categoria.query.filter_by(name=name).first() 
+        if existente and existente.id != id:
+            return {"error": "Ya existe otra categoría con ese nombre"}, 409
+
+        categoria.name = name
+        db.session.commit()
+
+        return CategoriaSchema().dump(categoria), 200
+
+    @jwt_required()
+    @roles_required("admin")
+    def delete(self, id):
+        categoria = Categoria.query.get_or_404(id)
+
+        #borrado no logico, porque no hay activo en categoria
+        db.session.delete(categoria)
+        db.session.commit()
+
+        return {"message": "Categoría elimnada correctamente"}, 200
+        
+#-------------------------------------------------------------
+#COMMENTS VIEW
+#------------------------------------------------------------- 
+
+    
+
