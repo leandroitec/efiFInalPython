@@ -51,9 +51,15 @@
 
 ###### UserDetailAPI
 1. Metodos GET, PUT, PATCH, DELETE funcionales
-2. Falta DELETES
+2. **Falta** BORRADO LOGICO
 3. PUT esta de mas, malinterprete la consigna, pero lo dejo
 5. __IMPORTANTE__ EN DELETE, BORRA DIRECTAMENTE LA FILA DE LA TABLA. VER IMPLEMENTAR BORRADO LOGICO
+6. **FALTA** mover de vievs a user_views
+###### PostAPI
+1. **FALTA** filtrado por categoria (logica armada en repository/service)  **FALTAAAAAA, LOGICA LISTA; CREAR RUTA Y ARMAR VIEW NOMAS**
+2. Actualmente getpost trae todo incluido is_active false, para test (RECORDAR CAMBIAR SERVICE)
+3. falta implementar editar categoria
+
 ## AVANCES/CHECKLIST
 
 - Creo esta seccion para controlar mas adelante que falta de la consigna

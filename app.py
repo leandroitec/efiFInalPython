@@ -79,7 +79,7 @@ app.add_url_rule(
 )
 
 app.add_url_rule(
-    '/posts/<id>',
+    '/posts/<int:id>',
     view_func=PostDetailAPI.as_view('post_detail_api'),
     methods=['GET', 'PUT', 'DELETE']
 )

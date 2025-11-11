@@ -1,10 +1,73 @@
+from marshmallow import ValidationError
 from repository.post_repository import PostRepository
-from schemas.schemas import PostSchema
+from models.models import Post
 
 #Logica de los datos de Repository (datos de las consultas a DB)
 class PostService:
-    
     def __init__(self):
-        self.pos_repository_repository = PostRepository()
-
+        # Inicializamos el repositorio
+        self.repository = PostRepository()
     
+    #para todos los posts
+    def get_all_post(self):
+        return self.repository.get_all()
+    
+    #solo active TRUE
+    def get_active_post(self):
+        return self.repository.get_all_active()
+    
+    #por categoria **VER SI FUNCIONA**
+    def get_by_category(self, categoria_id):
+        return self.repository.get_all_catgoryfilter(categoria_id)
+    
+    #por id
+    def get_by_id (self, post_id):
+        return self.repository.get_by_id(post_id)
+  
+    #crear post
+    def new_post (self, data, user_id):
+        try:
+            if not data.get("categoria_id"):
+                raise ValueError("Debe indicar una categoría.")
+            new_post = Post(
+                title=data.get('title'),
+                content=data.get('content'),
+                user_id=user_id,
+                categoria_id=data.get('categoria_id'),
+                is_active=True
+            )
+            return self.repository.add_post(new_post)
+        except ValidationError as error:
+            raise error
+        except Exception as error:
+            raise Exception(f"Error al crear el post: {str(error)}")
+    
+    #editar post
+    def update_post (self, post_id, data):
+        post = self.get_by_id(post_id)
+        if not post:
+            raise ValueError("El post no existe")
+        if 'title' in data:
+            post.title = data['title']
+        if 'content' in data:
+            post.content = data['content']
+        #if 'categoria_id' in data:
+            #post.categoria_id = data['categoria_id']
+            #NO ANDA EDITAR CATEGORIA   ****************************VER*********************
+        self.repository.update_post()
+        return post
+    
+    
+    #Logci delete post
+    def delete_post(self, post_id):
+        post = self.get_by_id(post_id)
+        if not post:
+            raise ValueError("El Post no existe")
+        self.repository.logic_delete(post)
+        return True
+    
+    def delete(self, post_id):
+        post = self.get_by_id(post_id)
+        self.repository.delete(post)
+        return True
+            
