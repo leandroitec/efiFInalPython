@@ -2,6 +2,7 @@
 #IMPORTS
 #-------------------------------------------------------------
 from flask import Flask, request
+from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 #import db
 from models.models import (
@@ -22,6 +23,12 @@ from views.user_view import UserAPI, UserDetailAPI
 #INICIA FLASK, SQL, ETC
 #-------------------------------------------------------------
 app = Flask(__name__)
+
+# Configuración del Frontend de React
+REACT_ORIGIN = "http://localhost:5173" 
+
+# Inicializa CORS, permitiendo solo el origen de React
+CORS(app, resources={r"/app/*": {"origins": REACT_ORIGIN}})
 
 #cambiar esto si tenes usuario y contraseña, //usuario:contraseña@host:@localhost/pyIIefi_db"
 app.config['SQLALCHEMY_DATABASE_URI'] = (
