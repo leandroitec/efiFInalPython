@@ -24,24 +24,70 @@
 ## DOCUMENTACION/ENDPOINTS
 
 1. POST /api/register               # Registro cuentas (Publico)
+        {
+            "username": "user6",
+            "email": "user6@gmail.com",
+            "password": "user6123",
+            "role": "user"
+        }
 2. POST /api/login                  # Autenth/loguearse (publico)
+        {
+            "email": "admin@gmail.com",
+            "password":"admin123"
+        }
 3. GET  /api/posts                  # Ver posteos (Publico)
+
 4. GET  /api/posts/<id>             # Ver posteo especifico (Publico)
+
 5. POST /api/posts                  # Publicar post (User +)
+        {
+            "title": "Guía completa de Flask",
+            "content": "En esta publicación explicamos",
+            "categoria_id": 2
+        }
 6. PUT  /api/posts/<id>             # Editar post (Self o Admin)
+        {
+            "title": "Nuevo título actualizado",
+            "content": "Este es el contenido modificado del post.",
+            "category_id": 2
+        }
 7. DELETE /api/posts/<id>           # Borrado logico (Self o Admin)
+
 8. GET /api/posts/<id>/comments     # Ver comment de un post (Publico)
+
 9. POST /api/posts/<id>/comments    # Comentar Post (User+)
+        {
+            "content": "Comentario"
+        }
 10. DELETE /api/comments/<id>       # Borrado logico comments (Self, Mod, Admin)
+
 11. GET /api/categories             # Ver categorias (Publico)
+
 12. POST /api/categories            # Crear nuevas categorias (Mods y Admin)
+        {
+            "name": "deportes"
+        }
 13. PUT /api/categories/<id>        # Editar categorias (Mods y Admin)
+        {
+            "name": "educacion"
+        }
 14. DELETE /api/categories/<id>     # Borrar categorias (Admin)
+
 15. GET /api/users                  # Ver todos los usuarios (Admin)
+
 16. GET /api/users/<id>             # Ver usuario especifico (Self o Admin)
+
 17. PUT /api/users/<id>             # Editar usuario (Self o Admin)
+        {
+            "username": "user7",
+            "email": "user7@gmail.com",
+            "password": "user7123",
+            "role": "user"
+        }
 18. PATCH /api/users/<id>/role      # Cambiar rol (Admin)
+
 19. DELETE /api/users/<id>          # Borrar usuaro (Admin)
+
 20. GET /api/stats                  # ver estadisticas (mod) +last week (Admin)
 
 
