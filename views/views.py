@@ -18,10 +18,10 @@ class UserRegisterAPI(MethodView):
         try:
             data = RegisterSchema().load(request.json)
         except ValidationError as err:
-            return {"Error": err}
+            return {"errors": err.messages}, 400
         
         if User.query.filter_by(email=data['email']).first():
-            return {"Error": "Email en uso"}
+            return {"errors": {"email": ["El email ya está en uso"]}}, 400
         
         password_hash = bcrypt.hash(data['password'])
 
@@ -36,7 +36,7 @@ class UserRegisterAPI(MethodView):
         db.session.add(credenciales)
         db.session.commit()
 
-        return {"mensaje": "Usuario creado", "user_id": UserSchema().dump(new_user)}
+        return {"mensaje": "Usuario creado", "user_id": UserSchema().dump(new_user)}, 201
 
 # autenticacion al loguearse **CHECK**
 class AuthLoginAPI(MethodView):

@@ -23,5 +23,5 @@ dependencies = [
     "bcrypt<4.0",
     "Flask-JWT-Extended",
     "passlib[bcrypt]==1.7.4",
-    "Flask-Cors",
+    "Flask-Cors"
 ]

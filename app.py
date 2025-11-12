@@ -18,6 +18,7 @@ from views.comment_views import CommentDetailAPI, PostCommentsAPI, CreateComment
 from views.stast_views import StatsAPI
 from views.views import UserRegisterAPI, AuthLoginAPI
 from views.user_view import UserAPI, UserDetailAPI
+from flask_cors import CORS
 
 #-------------------------------------------------------------
 #INICIA FLASK, SQL, ETC
@@ -28,7 +29,7 @@ app = Flask(__name__)
 REACT_ORIGIN = "http://localhost:5173" 
 
 # Inicializa CORS, permitiendo solo el origen de React
-CORS(app, resources={r"/app/*": {"origins": REACT_ORIGIN}})
+CORS(app, resources={r"/*": {"origins": REACT_ORIGIN}})
 
 #cambiar esto si tenes usuario y contraseña, //usuario:contraseña@host:@localhost/pyIIefi_db"
 app.config['SQLALCHEMY_DATABASE_URI'] = (
