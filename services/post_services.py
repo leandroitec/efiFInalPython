@@ -13,8 +13,8 @@ class PostService:
         return self.repository.get_all()
     
     #solo active TRUE
-    def get_active_post(self):
-        return self.repository.get_all_active()
+    def get_active_post(self, categoria_id=None):
+        return self.repository.get_all_active(categoria_id=categoria_id)
     
     #por categoria **VER SI FUNCIONA**
     def get_by_category(self, categoria_id):

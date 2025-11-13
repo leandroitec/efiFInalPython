@@ -10,8 +10,11 @@ class PostRepository:
     
     #devolver post no eliminados
     @staticmethod
-    def get_all_active():
-        return Post.query.filter_by(is_active=True).all()
+    def get_all_active(categoria_id=None):
+        query = Post.query.filter_by(is_active=True)
+        if categoria_id is not None:
+            query = query.filter_by(categoria_id=categoria_id)
+        return query.all()
     
     #devolver post por categoria id  **VER SI FUNCIONA**
     @staticmethod

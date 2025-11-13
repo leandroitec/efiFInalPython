@@ -11,6 +11,7 @@ from decorators.decorators import (
     post_admin_myid_required
     )
 from services.post_services import PostService
+from flask import request
 
 #-------------------------------------------------------------
 #POST VIEW
@@ -25,8 +26,8 @@ class PostAPI(MethodView):
     
     #ver todos los post
     def get(self):
-        #posts = self.post_service.get_active_post() #**********saco filtrado para tests***************
-        posts = self.post_service.get_all_post()
+        categoria_id = request.args.get('categoria_id', type=int)
+        posts = self.post_service.get_active_post(categoria_id=categoria_id)
         return PostSchema(many=True).dump(posts)
 
     @jwt_required()
