@@ -45,7 +45,7 @@ class AuthLoginAPI(MethodView):
             data = LoginSchema().load(request.json)
         except ValidationError as err:
             return {"errors": err.messages}, 400
-        user = User.query.filter_by(email=data["email"])[0]
+        user = User.query.filter_by(email=data["email"]).first()
         if not user or not user.credential:
             return {"errors": {"credentials": ["Inválidas"]}}, 401
         if not bcrypt.verify(data["password"], user.credential.password_hash):
