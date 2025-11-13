@@ -16,7 +16,7 @@ from views.post_views import PostAPI, PostDetailAPI
 from views.categorie_view import CategoriaCreateAPI, CategoriaListAPI, CategoriaDetailAPI
 from views.comment_views import CommentDetailAPI, PostCommentsAPI, CreateCommentAPI
 from views.stast_views import StatsAPI
-from views.views import UserRegisterAPI, AuthLoginAPI
+from views.views import UserRegisterAPI, AuthLoginAPI, RoleListAPI
 from views.user_view import UserAPI, UserDetailAPI
 from flask_cors import CORS
 
@@ -133,6 +133,11 @@ app.add_url_rule(
     "/comments/<int:id>",
     view_func=CommentDetailAPI.as_view("comment_detail"),
     methods=["DELETE"]
+)
+app.add_url_rule(
+    "/roles",
+    view_func=RoleListAPI.as_view("role_list_api"),
+    methods=["GET"]
 )
 
 #-------------------------------------------------------------

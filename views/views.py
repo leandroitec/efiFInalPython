@@ -65,5 +65,21 @@ class AuthLoginAPI(MethodView):
         )
         return {"access_token": token}, 200
 
+# views.py (Añadir al final del archivo)
+# ... (código existente) ...
+
+from flask.views import MethodView
+
+ROLE_OPTIONS = [
+    {"label": "Usuario Estándar", "value": "user"},
+    {"label": "Administrador", "value": "admin"},
+    {"label": "Moderador", "value": "moderator"},
+]
+
+#Devielve roles para front java
+class RoleListAPI(MethodView):
+    def get(self):
+        return {"roles": ROLE_OPTIONS}, 200
+
 
 
